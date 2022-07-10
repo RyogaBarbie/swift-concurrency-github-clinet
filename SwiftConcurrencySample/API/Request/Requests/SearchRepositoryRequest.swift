@@ -12,14 +12,12 @@ struct SearchRepositoryRequest: Request {
     let method: APIMethod = .get
     let path: String = "/search/repositories"
     let query: [String: String]
-    let body: String?
+    let body: String? = nil
 
     init(
-        query: [String: String],
-        body: String? = nil
+        keyword: String
     ) {
-        self.query = query
-        self.body = body
+        self.query = ["q": keyword]
     }
 }
 

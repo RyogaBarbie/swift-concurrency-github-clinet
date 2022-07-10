@@ -21,7 +21,7 @@ final class SearchRepositoryViewModel: ObservableObject {
     }
     
     struct State: Sendable {
-        var searchKeyword: String = ""
+        var resultsCount: Int = 0
         var repositories: [Repository]
 
         init(
@@ -58,7 +58,22 @@ final class SearchRepositoryViewModel: ObservableObject {
         case .didTap: break
         case let .search(keyword):
             environment.userDefaultsClient.searchKeywordHistories.append(keyword)
-            // TODO: API叩く
+            
+            let request = SearchRepositoryRequest(keyword: keyword)
+            Task {
+                do {
+                    let response = try await environment.apiClient.send(request)
+
+                    state.resultsCount = response.totalCount
+                    state.repositories = response.items.map {
+                        RepositoryTranslator.translateToRepository(from: $0)
+                    }
+                    dump(state)
+                } catch {
+                    print(error)
+                }
+            }
         }
+
     }
 }
