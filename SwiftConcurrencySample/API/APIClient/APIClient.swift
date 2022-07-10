@@ -54,8 +54,6 @@ class APIClient: APIClientProtocol {
     }
     
     func send<T: Request>(_ request: T) async throws -> T.Response {
-        
-        
         guard var urlComponents = URLComponents(string: APIConst.baseUrl) else { throw APIError.badUrl }
         urlComponents.path = request.path
         urlComponents.queryItems = request.query.map { URLQueryItem(name: $0.key, value: $0.value) }
