@@ -15,9 +15,19 @@ struct SearchRepositoryRequest: Request {
     let body: String? = nil
 
     init(
-        keyword: String
+        keyword: String,
+        perPage: Int = 30,
+        page: Int,
+        sort: String = "stars",
+        order: String = "desc"
     ) {
-        self.query = ["q": keyword]
+        self.query = [
+            "q": keyword,
+            "per_page": String(perPage),
+            "page": String(page),
+            "sort": sort,
+            "order": order
+        ]
     }
 }
 
