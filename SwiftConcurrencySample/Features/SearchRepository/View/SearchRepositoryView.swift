@@ -24,6 +24,7 @@ struct SearchRepositoryView: View {
                         .padding(.leading, 20)
                 }
             }
+            .padding(.top, 20)
         }
     }
 }

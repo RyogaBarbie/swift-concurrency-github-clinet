@@ -56,7 +56,7 @@ struct RepositoryView: View {
             Spacer().frame(height: 10)
             if let description = repository.description {
                 Text(description)
-                Spacer().frame(height: 10)
+                Spacer().frame(height: 15)
             }
             HStack(alignment: .center, spacing: 3) {
                 Image(systemName: "star")
