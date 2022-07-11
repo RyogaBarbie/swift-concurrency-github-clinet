@@ -61,6 +61,7 @@ final class SearchRepositoryViewModel: ObservableObject {
         switch action {
         case .didTap: break
         case let .search(keyword):
+            state.isLoading = true
             state.keyword = keyword
             environment.userDefaultsClient.searchKeywordHistories.append(keyword)
             
@@ -76,6 +77,8 @@ final class SearchRepositoryViewModel: ObservableObject {
                     state.repositories = response.items.map {
                         RepositoryTranslator.translateToRepository(from: $0)
                     }
+                    
+                    state.isLoading = false
                 } catch {
                     print(error)
                 }
