@@ -38,7 +38,7 @@ struct SearchRepositoryView: View {
                         ProgressView()
                     }
                 }
-                .padding(.top, 20)
+                .padding(.top, 15)
             }
         }
     }
