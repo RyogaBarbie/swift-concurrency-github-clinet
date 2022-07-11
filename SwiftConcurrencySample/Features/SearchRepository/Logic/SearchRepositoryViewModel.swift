@@ -63,6 +63,7 @@ final class SearchRepositoryViewModel: ObservableObject {
         case let .search(keyword):
             state.isLoading = true
             state.keyword = keyword
+            state.repositories = []
             environment.userDefaultsClient.searchKeywordHistories.append(keyword)
             
             let request = SearchRepositoryRequest(
