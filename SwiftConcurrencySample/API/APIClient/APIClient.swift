@@ -5,7 +5,7 @@
 //  Created by yamamura ryoga on 2022/07/09.
 //
 
-@preconcurrency import Foundation
+import Foundation
 
 enum APIError: Error, Sendable {
     case badUrl

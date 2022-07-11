@@ -35,6 +35,7 @@ class SearchRepositoryHostingController: UIHostingController<SearchRepositoryVie
     private func setup() {
         searchController.showsSearchResultsController = true
         searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Search Repository "
         navigationItem.searchController = searchController
     }
 }

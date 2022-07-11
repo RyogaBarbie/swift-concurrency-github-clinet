@@ -5,7 +5,7 @@
 //  Created by yamamura ryoga on 2022/07/10.
 //
 
-@preconcurrency import Foundation
+import Foundation
 
 @dynamicMemberLookup
 protocol UserDefaultsClientProtocol: AnyObject, Sendable {
