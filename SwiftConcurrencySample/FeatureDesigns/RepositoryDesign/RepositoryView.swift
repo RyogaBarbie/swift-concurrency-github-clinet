@@ -24,11 +24,11 @@ struct RepositoryView: View {
                     AsyncImage(url: avatarURL) { phase in
                         switch phase {
                         case .empty:
-                            ProgressView()
+                            ProgressView().frame(width: 25, height: 25)
                         case .success(let image):
                             image.resizable()
                                  .aspectRatio(contentMode: .fit)
-                                 .frame(maxWidth: 25, maxHeight: 25)
+                                 .frame(width: 25, height: 25)
                                  .cornerRadius(5)
                                  .overlay(
                                      RoundedRectangle(cornerRadius: 5)
@@ -36,7 +36,7 @@ struct RepositoryView: View {
                                  )
                         case .failure:
                             Image(systemName: "person.crop.circle.fill")
-                                .frame(maxWidth: 25, maxHeight: 25)
+                                .frame(width: 25, height: 25)
                         @unknown default:
                             // Since the AsyncImagePhase enum isn't frozen,
                             // we need to add this currently unused fallback
