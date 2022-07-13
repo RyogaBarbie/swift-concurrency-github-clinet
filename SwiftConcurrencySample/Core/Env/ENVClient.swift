@@ -9,11 +9,11 @@ import Foundation
 
 @dynamicMemberLookup
 protocol ENVClientProtocol {
-    subscript(dynamicMember key: String) -> String { get }
+    subscript(dynamicMember keyPath: KeyPath<ENVKeys, String>) -> String { get }
 }
 
 @dynamicMemberLookup
-struct ENVClient: Sendable {
+struct ENVClient: Sendable, ENVClientProtocol {
     private let envKeys = ENVKeys()
     subscript(dynamicMember keyPath: KeyPath<ENVKeys, String>) -> String {
         ENV[envKeys[keyPath: keyPath]]!

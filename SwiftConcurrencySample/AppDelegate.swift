@@ -16,7 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow()
         
         let rootViewController = SearchRepositoryBuilder.build(
-            apiClient: APIClient(urlSession: URLSession.shared),
+            apiClient: APIClient(
+                urlSession: URLSession.shared,
+                envClient: ENVClient()
+            ),
             userDefaultsClient: UserDefaultsClient(userDefaults: UserDefaults.standard)
         )
         let navigationController = UINavigationController(rootViewController: rootViewController)

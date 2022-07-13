@@ -49,8 +49,14 @@ protocol APIClientProtocol {
 
 class APIClient: APIClientProtocol {
     private let urlSession: URLSession
-    init(urlSession: URLSession) {
+    private let envClient: ENVClientProtocol
+
+    init(
+        urlSession: URLSession,
+        envClient: ENVClientProtocol
+    ) {
         self.urlSession = urlSession
+        self.envClient = envClient
     }
     
     func send<T: Request>(_ request: T) async throws -> T.Response {
@@ -62,6 +68,7 @@ class APIClient: APIClientProtocol {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
         urlRequest.httpBody = request.body?.data(using: .utf8)
+        urlRequest.allHTTPHeaderFields = ["Authorization": "token \(envClient.githubAccessToken)"]
 
         let (data, response) = try await urlSession.data(for: urlRequest)
 
