@@ -25,6 +25,9 @@ Brewfile.lock.json
 .bundle
 vendor/*
 
-
 # tmp
 tmp/*
+
+# Environment
+.env
+ENV.swift

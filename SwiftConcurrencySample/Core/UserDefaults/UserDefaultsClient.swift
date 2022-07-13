@@ -8,7 +8,6 @@
 @preconcurrency import Foundation
 
 @dynamicMemberLookup
-//actor UserDefaultsClient: UserDefaultsClientProtocol {
 final class UserDefaultsClient: UserDefaultsClientProtocol {
     private let keys = UserDefaultsClientKeys()
     private let userDefaults: UserDefaults
