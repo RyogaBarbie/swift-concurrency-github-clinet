@@ -80,7 +80,7 @@ class APIClient: APIClientProtocol {
             }
             throw error
         }
-        
+
         let jsonDecoder = JSONDecoder()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
         jsonDecoder.dateDecodingStrategy = .iso8601
