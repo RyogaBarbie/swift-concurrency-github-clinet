@@ -9,15 +9,12 @@ import Foundation
 import UIKit
 
 class BaseTabBarController: UITabBarController {
-    let apiClient: APIClientProtocol
-    let userDefaultsClient: UserDefaultsClientProtocol
+    private let featureProvider: FeatureProviderProtocol
     
     init(
-        apiClient: APIClientProtocol,
-        userDefaultsClient: UserDefaultsClientProtocol
+        featureProvider: FeatureProviderProtocol
     ) {
-        self.apiClient = apiClient
-        self.userDefaultsClient = userDefaultsClient
+        self.featureProvider = featureProvider
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -32,20 +29,16 @@ class BaseTabBarController: UITabBarController {
     }
     
     private func setup() {
-        let searchRepoVc = SearchRepositoryBuilder.build(
-            apiClient: apiClient,
-            userDefaultsClient: userDefaultsClient
-        )
+        let searchRepositoryViewRequest = SearchRepositoryViewRequest()
+        let searchRepoVc = featureProvider.build(searchRepositoryViewRequest)
         let firstNavigationController = UINavigationController(rootViewController: searchRepoVc)
         searchRepoVc.setupTabBarItem(
             title: "Search",
             image: UIImage(systemName: "magnifyingglass")
         )
 
-        let staredRepoVc = StaredRepositoryBuilder.build(
-            apiClient: apiClient,
-            userDefaultsClient: userDefaultsClient
-        )
+        let staredRepositoryViewRequest = StaredRepositoryViewRequest()
+        let staredRepoVc = featureProvider.build(staredRepositoryViewRequest)
         staredRepoVc.setupTabBarItem(
             title: "Stared",
             image: UIImage(systemName: "star.fill")

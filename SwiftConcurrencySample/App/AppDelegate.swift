@@ -16,26 +16,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow()
 
-//        let rootViewController = SearchRepositoryBuilder.build(
-//            apiClient: APIClient(
-//                urlSession: URLSession.shared,
-//                envClient: ENVClient()
-//            ),
-//            userDefaultsClient: UserDefaultsClient(userDefaults: UserDefaults.standard)
-//        )
-//        let navigationController = UINavigationController(rootViewController: rootViewController)
-        
-//        let tabbarController = UITabBarController()
-//        tabbarController.setViewControllers([navigationController, UIViewController()], animated: false)
+
+        /// initialize
+
+        let envClient = ENVClient()
+        let featureProvider = FeatureProvider(
+            appEnvironment: .init(
+                apiClient: APIClient(
+                    urlSession: URLSession.shared,
+                    envClient: envClient
+                ),
+                envClinet: envClient,
+                userDefaultsClient: UserDefaultsClient(
+                    userDefaults: UserDefaults.standard
+                )
+            )
+        )
         
         let tabbarController = BaseTabBarController(
-            apiClient: APIClient(
-                urlSession: URLSession.shared,
-                envClient: ENVClient()
-            ),
-            userDefaultsClient: UserDefaultsClient(
-                userDefaults: UserDefaults.standard
-            )
+            featureProvider: featureProvider
         )
 
         window?.rootViewController = tabbarController
