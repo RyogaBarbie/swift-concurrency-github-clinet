@@ -48,6 +48,7 @@ final class SearchRepositoryViewModel: ObservableObject {
     }
     
     enum Action: Sendable {
+        case viewDidLoad
         case didTap
         case search(String)
         case pagination
@@ -59,6 +60,27 @@ final class SearchRepositoryViewModel: ObservableObject {
     
     func send(_ action: Action) {
         switch action {
+        case .viewDidLoad:
+            state.isLoading = true
+
+            let request = SearchRepositoryRequest(
+                keyword: "swift",
+                page: state.page,
+                sort: "updated"
+            )
+            Task {
+                do {
+                    let response = try await environment.apiClient.send(request)
+
+                    state.resultsCount = response.totalCount
+                    state.repositories = response.items.map {
+                        RepositoryTranslator.translateToRepository(from: $0)
+                    }
+                } catch {
+                    print(error)
+                }
+                state.isLoading = false
+            }
         case .didTap: break
         case let .search(keyword):
             state.isLoading = true

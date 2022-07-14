@@ -30,6 +30,7 @@ class SearchRepositoryHostingController: UIHostingController<SearchRepositoryVie
         super.viewDidLoad()
 
         setup()
+        viewModel.send(.viewDidLoad)
     }
     
     private func setup() {
