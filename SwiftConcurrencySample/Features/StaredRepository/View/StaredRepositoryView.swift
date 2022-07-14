@@ -27,9 +27,15 @@ struct StaredRepositoryView: View {
                         Array(viewModel.state.repositories.enumerated()),
                         id: \.element.id
                     ) { index, repository in
-                        RepositoryView(repository: repository)
+                        RepositoryView(
+                            repository: repository,
+                            didTapStaredClosure: { repository in
+                                viewModel.send(.didTapStar)
+                            }
+                        )
                             .padding(.leading, 20)
                             .onAppear {
+                                viewModel.send(.checkStar(index, repository))
                                 if index > (viewModel.state.repositories.count - 6) {
                                     viewModel.send(.pagination)
                                 }

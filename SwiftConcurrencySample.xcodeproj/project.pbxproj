@@ -35,6 +35,9 @@
 		AD50775B287FCA1B00009C1D /* FeatureProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD50775A287FCA1B00009C1D /* FeatureProviderProtocol.swift */; };
 		AD50775D287FCA4F00009C1D /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD50775C287FCA4F00009C1D /* AppEnvironment.swift */; };
 		AD507760287FCCC000009C1D /* ViewRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD50775F287FCCC000009C1D /* ViewRequests.swift */; };
+		AD507762287FFFBA00009C1D /* StarRepositoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD507761287FFFBA00009C1D /* StarRepositoryRequest.swift */; };
+		AD5077642880010700009C1D /* EmptyResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5077632880010700009C1D /* EmptyResponse.swift */; };
+		AD50776628800BAB00009C1D /* CheckStarRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD50776528800BAB00009C1D /* CheckStarRequest.swift */; };
 		AD695E46287984F500D1C9B5 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E45287984F500D1C9B5 /* APIClient.swift */; };
 		AD695E492879AC7700D1C9B5 /* SearchRepositoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E482879AC7700D1C9B5 /* SearchRepositoryRequest.swift */; };
 		AD695E4C2879AC9600D1C9B5 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E4B2879AC9600D1C9B5 /* Request.swift */; };
@@ -76,6 +79,9 @@
 		AD50775A287FCA1B00009C1D /* FeatureProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureProviderProtocol.swift; sourceTree = "<group>"; };
 		AD50775C287FCA4F00009C1D /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		AD50775F287FCCC000009C1D /* ViewRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRequests.swift; sourceTree = "<group>"; };
+		AD507761287FFFBA00009C1D /* StarRepositoryRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRepositoryRequest.swift; sourceTree = "<group>"; };
+		AD5077632880010700009C1D /* EmptyResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResponse.swift; sourceTree = "<group>"; };
+		AD50776528800BAB00009C1D /* CheckStarRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckStarRequest.swift; sourceTree = "<group>"; };
 		AD695E45287984F500D1C9B5 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		AD695E482879AC7700D1C9B5 /* SearchRepositoryRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryRequest.swift; sourceTree = "<group>"; };
 		AD695E4B2879AC9600D1C9B5 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
@@ -321,6 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				AD695E4B2879AC9600D1C9B5 /* Request.swift */,
+				AD5077632880010700009C1D /* EmptyResponse.swift */,
 				AD695E4A2879AC8500D1C9B5 /* Requests */,
 			);
 			path = Request;
@@ -331,6 +338,8 @@
 			children = (
 				AD695E482879AC7700D1C9B5 /* SearchRepositoryRequest.swift */,
 				AD507741287EE35400009C1D /* StaredRepositoriesRequest.swift */,
+				AD507761287FFFBA00009C1D /* StarRepositoryRequest.swift */,
+				AD50776528800BAB00009C1D /* CheckStarRequest.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -455,6 +464,7 @@
 				AD2F2DC6287A66B10089DC2D /* AppDelegate.swift in Sources */,
 				AD2F2DC0287A579B0089DC2D /* SearchRepositoryBuilder.swift in Sources */,
 				AD2F329A287AC87C0089DC2D /* UserDefaultsClientProtocol.swift in Sources */,
+				AD5077642880010700009C1D /* EmptyResponse.swift in Sources */,
 				AD2F2DC4287A59290089DC2D /* SearchRepositoryViewModel.swift in Sources */,
 				AD2F3ECB287ED2860089DC2D /* ENVClient.swift in Sources */,
 				AD50774C287FA3E600009C1D /* StaredRepositoryView.swift in Sources */,
@@ -468,6 +478,7 @@
 				AD695E5D2879ADD500D1C9B5 /* User.swift in Sources */,
 				AD507754287FA6D300009C1D /* StaredRepositoryBuilder.swift in Sources */,
 				AD507760287FCCC000009C1D /* ViewRequests.swift in Sources */,
+				AD507762287FFFBA00009C1D /* StarRepositoryRequest.swift in Sources */,
 				AD2F2DC2287A57D00089DC2D /* SearchRepositoryHostingController.swift in Sources */,
 				AD695E572879AD6C00D1C9B5 /* UserEntity.swift in Sources */,
 				AD2F2DBA287A56EA0089DC2D /* SearchRepositoryView.swift in Sources */,
@@ -477,6 +488,7 @@
 				AD507759287FCA0E00009C1D /* FeatureProvider.swift in Sources */,
 				AD50775D287FCA4F00009C1D /* AppEnvironment.swift in Sources */,
 				AD507749287EFB6100009C1D /* ViewController+tabbaritem.swift in Sources */,
+				AD50776628800BAB00009C1D /* CheckStarRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,6 +14,7 @@ enum APIError: Error, Sendable {
     case notFound
     case methodNotAllowed
     case internalServerError
+    case responseError
     case unknown(Int)
 
     public init(rawValue: Int){
@@ -37,6 +38,7 @@ enum APIError: Error, Sendable {
 enum APIMethod: String {
     case get
     case post
+    case put
 }
 
 enum APIConst {
@@ -68,9 +70,22 @@ class APIClient: APIClientProtocol {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
         urlRequest.httpBody = request.body?.data(using: .utf8)
-        urlRequest.allHTTPHeaderFields = ["Authorization": "token \(envClient.githubAccessToken)"]
+        urlRequest.allHTTPHeaderFields = [
+            "Authorization": "token \(envClient.githubAccessToken)",
+            "Accept": "application/vnd.github+json"
+        ]
 
         let (data, response) = try await urlSession.data(for: urlRequest)
+
+        // CheckStarの時に成功時の結果が204 or 404で返ってくるので
+        // StatusCodeのvalidateの前にチェックする
+        if let _ = request as? CheckStarRequest, T.Response.self == Bool.self {
+            do {
+                return try convertToBool(response: response) as! T.Response
+            } catch {
+                throw error
+            }
+        }
 
         do {
             try validate(response: response)
@@ -80,6 +95,14 @@ class APIClient: APIClientProtocol {
             }
             throw error
         }
+        
+        guard data.count > 0 else {
+            if let response = EmptyResponse() as? T.Response {
+                return response
+            } else {
+                throw APIError.responseError
+            }
+        }
 
         let jsonDecoder = JSONDecoder()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -88,10 +111,21 @@ class APIClient: APIClientProtocol {
         return try jsonDecoder.decode(T.Response.self, from: data)
     }
     
-    func validate(response: URLResponse) throws {
+    private func validate(response: URLResponse) throws {
         guard let httpResponse = response as? HTTPURLResponse else { return }
         if !(200..<300).contains(httpResponse.statusCode) {
             throw APIError(rawValue: httpResponse.statusCode)
+        }
+    }
+    
+    private func convertToBool(response: URLResponse) throws -> Bool {
+        guard let httpResponse = response as? HTTPURLResponse else { return false }
+        if httpResponse.statusCode == 204 {
+            return true
+        } else if httpResponse.statusCode == 404 {
+            return false
+        } else {
+            throw APIError.responseError
         }
     }
 }

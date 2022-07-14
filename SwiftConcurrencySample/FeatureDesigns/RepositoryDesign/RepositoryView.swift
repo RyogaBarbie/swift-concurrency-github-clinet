@@ -10,11 +10,14 @@ import SwiftUI
 
 struct RepositoryView: View {
     private let repository: Repository
+    private let didTapStaredClosure: (Repository) -> Void
 
     init(
-        repository: Repository
+        repository: Repository,
+        didTapStaredClosure: @escaping (Repository) -> Void
     ) {
         self.repository = repository
+        self.didTapStaredClosure = didTapStaredClosure
     }
 
     var body: some View {
@@ -51,7 +54,7 @@ struct RepositoryView: View {
                     .font(.system(size: 15, weight: .regular))
             }
             Spacer().frame(height: 10)
-            Text(repository.fullName)
+            Text(repository.name)
                 .fontWeight(.bold)
             Spacer().frame(height: 10)
             if let description = repository.description {
@@ -59,12 +62,23 @@ struct RepositoryView: View {
                 Spacer().frame(height: 15)
             }
             HStack(alignment: .center, spacing: 3) {
-                Image(systemName: "star")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 14, weight: .semibold))
-                Text(String(repository.stargazersCount))
-                    .foregroundColor(.gray)
-                    .font(.system(size: 14))
+                HStack(alignment: .center, spacing: 3) {
+                    if let isStared = repository.isStared, isStared {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 14, weight: .semibold))
+                    } else {
+                        Image(systemName: "star")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    Text(String(repository.stargazersCount))
+                        .foregroundColor(.gray)
+                        .font(.system(size: 14))
+                }
+                .onTapGesture {
+                    didTapStaredClosure(repository)
+                }
                 Spacer().frame(width: 20)
                 if let language = repository.language {
                     HStack(alignment: .center, spacing: 3) {

@@ -47,7 +47,8 @@ final class StaredRepositoryViewModel: ObservableObject {
     
     enum Action: Sendable {
         case viewDidLoad
-        case didTap
+        case didTapStar
+        case checkStar(Int, Repository)
         case pagination
     }
     
@@ -69,14 +70,30 @@ final class StaredRepositoryViewModel: ObservableObject {
                     state.repositories.append(contentsOf: response.map {
                         RepositoryTranslator.translateToRepository(from: $0)
                     })
-                    dump(state.repositories)
                 } catch {
                     print(error)
                 }
 
                 state.isLoading = false
             }
-        case .didTap: break
+        case .didTapStar: break
+
+        case let .checkStar(index, repository):
+            guard repository.isStared == nil else { break }
+
+            let request = CheckStarRequest(
+                ownerName: repository.owner.login,
+                repositoryName: repository.name
+            )
+            Task {
+                do {
+                    let response = try await environment.apiClient.send(request)
+                    state.repositories[index].isStared = response
+                } catch {
+                    print(error)
+                }
+            }
+
         case .pagination:
             if state.isLoading { return } else { state.isLoading = true }
             state.page += 1

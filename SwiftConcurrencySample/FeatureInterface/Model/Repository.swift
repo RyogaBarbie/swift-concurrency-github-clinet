@@ -24,5 +24,7 @@ struct Repository: Codable, Sendable {
     let language: String?
     let forksCount: Int
     let license: GithubLicense?
+    /// CheckStarAPIで確認後の結果
+    var isStared: Bool? = nil
 }
 
