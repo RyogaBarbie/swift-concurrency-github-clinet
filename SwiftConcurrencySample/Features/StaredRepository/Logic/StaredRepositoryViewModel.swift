@@ -47,7 +47,7 @@ final class StaredRepositoryViewModel: ObservableObject {
     
     enum Action: Sendable {
         case viewDidLoad
-        case didTapStar
+        case didTapStar(Int, Repository)
         case checkStar(Int, Repository)
         case pagination
     }
@@ -76,7 +76,24 @@ final class StaredRepositoryViewModel: ObservableObject {
 
                 state.isLoading = false
             }
-        case .didTapStar: break
+
+        case let .didTapStar(index, repository):
+            if let isStared = repository.isStared, isStared {
+                print("already Stared")
+            } else {
+                let request = StarRepositoryRequest(
+                    ownerName: repository.owner.login,
+                    repositoryName: repository.name
+                )
+                Task {
+                    do {
+                        _ = try await environment.apiClient.send(request)
+                        state.repositories[index].isStared = true
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
 
         case let .checkStar(index, repository):
             guard repository.isStared == nil else { break }

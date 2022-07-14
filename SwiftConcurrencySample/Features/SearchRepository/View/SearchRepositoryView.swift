@@ -28,8 +28,8 @@ struct SearchRepositoryView: View {
                     ) { index, repository in
                         RepositoryView(
                             repository: repository,
-                            didTapStaredClosure: { repository in
-                                viewModel.send(.didTapStar)
+                            didTapStaredClosure: {
+                                viewModel.send(.didTapStar(index, repository))
                             }
                         )
                             .padding(.leading, 20)

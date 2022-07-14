@@ -10,11 +10,11 @@ import SwiftUI
 
 struct RepositoryView: View {
     private let repository: Repository
-    private let didTapStaredClosure: (Repository) -> Void
+    private let didTapStaredClosure: () -> Void
 
     init(
         repository: Repository,
-        didTapStaredClosure: @escaping (Repository) -> Void
+        didTapStaredClosure: @escaping () -> Void
     ) {
         self.repository = repository
         self.didTapStaredClosure = didTapStaredClosure
@@ -77,7 +77,7 @@ struct RepositoryView: View {
                         .font(.system(size: 14))
                 }
                 .onTapGesture {
-                    didTapStaredClosure(repository)
+                    didTapStaredClosure()
                 }
                 Spacer().frame(width: 20)
                 if let language = repository.language {

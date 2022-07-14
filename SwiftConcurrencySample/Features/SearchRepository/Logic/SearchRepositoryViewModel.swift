@@ -49,7 +49,7 @@ final class SearchRepositoryViewModel: ObservableObject {
     
     enum Action: Sendable {
         case viewDidLoad
-        case didTapStar
+        case didTapStar(Int, Repository)
         case search(String)
         case checkStar(Int, Repository)
         case pagination
@@ -83,8 +83,24 @@ final class SearchRepositoryViewModel: ObservableObject {
                 state.isLoading = false
             }
 
-        case .didTapStar:
-            break
+        case let .didTapStar(index, repository):
+            if let isStared = repository.isStared, isStared {
+                print("already Stared")
+            } else {
+                let request = StarRepositoryRequest(
+                    ownerName: repository.owner.login,
+                    repositoryName: repository.name
+                )
+                Task {
+                    do {
+                        _ = try await environment.apiClient.send(request)
+                        state.repositories[index].isStared = true
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+            
         case let .search(keyword):
             state.isLoading = true
             state.keyword = keyword
@@ -147,6 +163,7 @@ final class SearchRepositoryViewModel: ObservableObject {
                 state.isLoading = false
             }
         }
-
     }
+
+
 }
