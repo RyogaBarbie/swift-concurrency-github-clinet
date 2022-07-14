@@ -1,14 +1,14 @@
 //
-//  SearchRepositoryViewModel.swift
+//  StaredRepositoryViewModel.swift
 //  SwiftConcurrencySample
 //
-//  Created by yamamura ryoga on 2022/07/10.
+//  Created by yamamura ryoga on 2022/07/14.
 //
 
 import Foundation
 
 @MainActor
-final class SearchRepositoryViewModel: ObservableObject {
+final class StaredRepositoryViewModel: ObservableObject {
     @Published var state: State
     private let environment: Environment
     
@@ -21,9 +21,7 @@ final class SearchRepositoryViewModel: ObservableObject {
     }
     
     struct State: Sendable {
-        var keyword: String = ""
         var page: Int = 1
-        var resultsCount: Int = 0
         var repositories: [Repository]
         var isLoading: Bool = false
 
@@ -48,8 +46,8 @@ final class SearchRepositoryViewModel: ObservableObject {
     }
     
     enum Action: Sendable {
+        case viewDidLoad
         case didTap
-        case search(String)
         case pagination
     }
     
@@ -59,52 +57,48 @@ final class SearchRepositoryViewModel: ObservableObject {
     
     func send(_ action: Action) {
         switch action {
-        case .didTap: break
-        case let .search(keyword):
+        case .viewDidLoad:
             state.isLoading = true
-            state.keyword = keyword
-            state.repositories = []
-            environment.userDefaultsClient.searchKeywordHistories.append(keyword)
             
-            let request = SearchRepositoryRequest(
-                keyword: state.keyword,
+            let request = StaredRepositoriesRequest(
                 page: state.page
             )
             Task {
                 do {
                     let response = try await environment.apiClient.send(request)
-
-                    state.resultsCount = response.totalCount
-                    state.repositories = response.items.map {
+                    state.repositories.append(contentsOf: response.map {
                         RepositoryTranslator.translateToRepository(from: $0)
-                    }
+                    })
+                    dump(state.repositories)
                 } catch {
                     print(error)
                 }
+
                 state.isLoading = false
             }
+        case .didTap: break
         case .pagination:
             if state.isLoading { return } else { state.isLoading = true }
             state.page += 1
 
+            let request = StaredRepositoriesRequest(
+                page: state.page
+            )
+
             Task {
                 do {
-                    let request = SearchRepositoryRequest(
-                        keyword: state.keyword,
-                        page: state.page
-                    )
                     let response = try await environment.apiClient.send(request)
-
-                    state.resultsCount = response.totalCount
-                    state.repositories.append(contentsOf: response.items.map {
+                    state.repositories.append(contentsOf: response.map {
                         RepositoryTranslator.translateToRepository(from: $0)
                     })
                 } catch {
                     print(error)
                 }
+
                 state.isLoading = false
             }
         }
 
     }
+
 }

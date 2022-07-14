@@ -28,7 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        let tabbarController = UITabBarController()
 //        tabbarController.setViewControllers([navigationController, UIViewController()], animated: false)
         
-        let tabbarController = BaseTabBarController()
+        let tabbarController = BaseTabBarController(
+            apiClient: APIClient(
+                urlSession: URLSession.shared,
+                envClient: ENVClient()
+            ),
+            userDefaultsClient: UserDefaultsClient(
+                userDefaults: UserDefaults.standard
+            )
+        )
 
         window?.rootViewController = tabbarController
         window?.makeKeyAndVisible()

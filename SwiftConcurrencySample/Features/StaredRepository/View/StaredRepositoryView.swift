@@ -1,21 +1,22 @@
 //
-//  SearchRespositoryView.swift
+//  StaredRepository.swift
 //  SwiftConcurrencySample
 //
-//  Created by yamamura ryoga on 2022/07/10.
+//  Created by yamamura ryoga on 2022/07/14.
 //
 
 import Foundation
 import SwiftUI
 
-struct SearchRepositoryView: View {
-    @ObservedObject private var viewModel: SearchRepositoryViewModel
+struct StaredRepositoryView: View {
+    @ObservedObject private var viewModel: StaredRepositoryViewModel
+    
     init(
-        viewModel: SearchRepositoryViewModel
+        viewModel: StaredRepositoryViewModel
     ) {
         self.viewModel = viewModel
     }
-
+    
     var body: some View {
         if viewModel.state.isLoading && viewModel.state.repositories.isEmpty {
             ProgressView()
