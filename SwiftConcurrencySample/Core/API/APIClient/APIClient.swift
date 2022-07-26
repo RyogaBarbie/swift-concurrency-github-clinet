@@ -39,6 +39,7 @@ enum APIMethod: String {
     case get
     case post
     case put
+    case delete
 }
 
 enum APIConst {

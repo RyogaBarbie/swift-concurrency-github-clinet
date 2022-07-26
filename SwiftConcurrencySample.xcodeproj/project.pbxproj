@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD2D904D288F826B001CAD27 /* UnStarRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2D904C288F826B001CAD27 /* UnStarRequest.swift */; };
 		AD2F2DBA287A56EA0089DC2D /* SearchRepositoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F2DB9287A56EA0089DC2D /* SearchRepositoryView.swift */; };
 		AD2F2DC0287A579B0089DC2D /* SearchRepositoryBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F2DBF287A579B0089DC2D /* SearchRepositoryBuilder.swift */; };
 		AD2F2DC2287A57D00089DC2D /* SearchRepositoryHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F2DC1287A57D00089DC2D /* SearchRepositoryHostingController.swift */; };
@@ -49,6 +50,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AD2D904C288F826B001CAD27 /* UnStarRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnStarRequest.swift; sourceTree = "<group>"; };
 		AD2F2DB9287A56EA0089DC2D /* SearchRepositoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryView.swift; sourceTree = "<group>"; };
 		AD2F2DBF287A579B0089DC2D /* SearchRepositoryBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryBuilder.swift; sourceTree = "<group>"; };
 		AD2F2DC1287A57D00089DC2D /* SearchRepositoryHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryHostingController.swift; sourceTree = "<group>"; };
@@ -224,12 +226,12 @@
 			children = (
 				AD4CB3B5287978EF0029883B /* Assets.xcassets */,
 				AD2F2DC7287A6A180089DC2D /* Info.plist */,
-				AD507745287EF00A00009C1D /* App */,
 				AD2F32A7287DBBEA0089DC2D /* Core */,
+				AD695E5A2879ADB800D1C9B5 /* FeatureInterface */,
 				AD2F32A4287AE5370089DC2D /* DesignCore */,
 				AD2F32A0287ACF0F0089DC2D /* FeatureDesigns */,
 				AD2F2DBB287A57260089DC2D /* Features */,
-				AD695E5A2879ADB800D1C9B5 /* FeatureInterface */,
+				AD507745287EF00A00009C1D /* App */,
 				AD4CB3B7287978EF0029883B /* Preview Content */,
 			);
 			path = SwiftConcurrencySample;
@@ -340,6 +342,7 @@
 				AD507741287EE35400009C1D /* StaredRepositoriesRequest.swift */,
 				AD507761287FFFBA00009C1D /* StarRepositoryRequest.swift */,
 				AD50776528800BAB00009C1D /* CheckStarRequest.swift */,
+				AD2D904C288F826B001CAD27 /* UnStarRequest.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				AD2F329A287AC87C0089DC2D /* UserDefaultsClientProtocol.swift in Sources */,
 				AD5077642880010700009C1D /* EmptyResponse.swift in Sources */,
 				AD2F2DC4287A59290089DC2D /* SearchRepositoryViewModel.swift in Sources */,
+				AD2D904D288F826B001CAD27 /* UnStarRequest.swift in Sources */,
 				AD2F3ECB287ED2860089DC2D /* ENVClient.swift in Sources */,
 				AD50774C287FA3E600009C1D /* StaredRepositoryView.swift in Sources */,
 				AD695E4C2879AC9600D1C9B5 /* Request.swift in Sources */,

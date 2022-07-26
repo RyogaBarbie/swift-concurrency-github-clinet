@@ -79,7 +79,19 @@ final class StaredRepositoryViewModel: ObservableObject {
 
         case let .didTapStar(index, repository):
             if let isStared = repository.isStared, isStared {
-                print("already Stared")
+                let request = UnStarRequest(
+                    ownerName: repository.owner.login,
+                    repositoryName: repository.name
+                )
+                Task {
+                    do {
+                        _ = try await environment.apiClient.send(request)
+                        state.repositories[index].isStared = false
+                        state.repositories[index].stargazersCount -= 1
+                    } catch {
+                        print(error)
+                    }
+                }
             } else {
                 let request = StarRepositoryRequest(
                     ownerName: repository.owner.login,
@@ -89,6 +101,7 @@ final class StaredRepositoryViewModel: ObservableObject {
                     do {
                         _ = try await environment.apiClient.send(request)
                         state.repositories[index].isStared = true
+                        state.repositories[index].stargazersCount += 1
                     } catch {
                         print(error)
                     }

@@ -19,7 +19,7 @@ struct Repository: Codable, Sendable {
     let createdAt: Date
     let updatedAt: Date
     let homepage: String?
-    let stargazersCount: Int
+    var stargazersCount: Int
     let watchersCount: Int
     let language: String?
     let forksCount: Int
