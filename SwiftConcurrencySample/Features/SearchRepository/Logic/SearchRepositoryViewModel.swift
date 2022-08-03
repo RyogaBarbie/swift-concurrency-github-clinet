@@ -37,13 +37,16 @@ final class SearchRepositoryViewModel: ObservableObject {
     struct Environment {
         let apiClient: APIClientProtocol
         let userDefaultsClient: UserDefaultsClientProtocol
+        let notificationCenter: NotificationCenter
 
         init(
             apiClient: APIClientProtocol,
-            userDefaultsClient: UserDefaultsClientProtocol
+            userDefaultsClient: UserDefaultsClientProtocol,
+            notificationCenter: NotificationCenter
         ) {
             self.apiClient = apiClient
             self.userDefaultsClient = userDefaultsClient
+            self.notificationCenter = notificationCenter
         }
     }
     
@@ -94,6 +97,11 @@ final class SearchRepositoryViewModel: ObservableObject {
                         _ = try await environment.apiClient.send(request)
                         state.repositories[index].isStared = false
                         state.repositories[index].stargazersCount -= 1
+
+                        environment.notificationCenter.post(
+                            name: Notification.Name.updateUserStares,
+                            object: state.repositories[index]
+                        )
                     } catch {
                         print(error)
                     }
@@ -108,6 +116,11 @@ final class SearchRepositoryViewModel: ObservableObject {
                         _ = try await environment.apiClient.send(request)
                         state.repositories[index].isStared = true
                         state.repositories[index].stargazersCount += 1
+
+                        environment.notificationCenter.post(
+                            name: Notification.Name.updateUserStares,
+                            object: state.repositories[index]
+                        )
                     } catch {
                         print(error)
                     }

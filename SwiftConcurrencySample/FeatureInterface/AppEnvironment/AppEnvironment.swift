@@ -12,14 +12,17 @@ class AppEnvironment {
     let apiClient: APIClientProtocol
     let envClinet: ENVClientProtocol
     let userDefaultsClient: UserDefaultsClientProtocol
+    let notificationCenter: NotificationCenter
     
     init(
         apiClient: APIClientProtocol,
         envClinet: ENVClientProtocol,
-        userDefaultsClient: UserDefaultsClientProtocol
+        userDefaultsClient: UserDefaultsClientProtocol,
+        notificationCenter: NotificationCenter
     ) {
         self.apiClient = apiClient
         self.envClinet = envClinet
         self.userDefaultsClient = userDefaultsClient
+        self.notificationCenter = notificationCenter
     }
 }

@@ -50,6 +50,7 @@ final class StaredRepositoryViewModel: ObservableObject {
         case didTapStar(Int, Repository)
         case checkStar(Int, Repository)
         case pagination
+        case updateUserStares
     }
     
     enum RouteType: Sendable {
@@ -132,6 +133,26 @@ final class StaredRepositoryViewModel: ObservableObject {
                 page: state.page
             )
 
+            Task {
+                do {
+                    let response = try await environment.apiClient.send(request)
+                    state.repositories.append(contentsOf: response.map {
+                        RepositoryTranslator.translateToRepository(from: $0)
+                    })
+                } catch {
+                    print(error)
+                }
+
+                state.isLoading = false
+            }
+        case .updateUserStares:
+            state.page = 1
+            state.repositories = []
+            state.isLoading = true
+            
+            let request = StaredRepositoriesRequest(
+                page: state.page
+            )
             Task {
                 do {
                     let response = try await environment.apiClient.send(request)

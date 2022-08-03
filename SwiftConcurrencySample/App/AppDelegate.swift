@@ -29,7 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 envClinet: envClient,
                 userDefaultsClient: UserDefaultsClient(
                     userDefaults: UserDefaults.standard
-                )
+                ),
+                notificationCenter: NotificationCenter.default
             )
         )
         
