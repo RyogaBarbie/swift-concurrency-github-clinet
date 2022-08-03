@@ -21,14 +21,16 @@ class FeatureProvider: FeatureProviderProtocol {
     func build(_: SearchRepositoryViewRequest) -> UIViewController {
         SearchRepositoryBuilder.build(
             apiClient: appEnvironment.apiClient,
-            userDefaultsClient: appEnvironment.userDefaultsClient
+            userDefaultsClient: appEnvironment.userDefaultsClient,
+            notificationCenter: appEnvironment.notificationCenter
         )
     }
     
     func build(_: StaredRepositoryViewRequest) -> UIViewController {
         StaredRepositoryBuilder.build(
             apiClient: appEnvironment.apiClient,
-            userDefaultsClient: appEnvironment.userDefaultsClient
+            userDefaultsClient: appEnvironment.userDefaultsClient,
+            notificationCenter: appEnvironment.notificationCenter
         )
     }
 }

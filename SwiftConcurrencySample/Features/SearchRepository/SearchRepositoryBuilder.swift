@@ -11,13 +11,15 @@ import UIKit
 enum SearchRepositoryBuilder {
     @MainActor static func build(
         apiClient: APIClientProtocol,
-        userDefaultsClient: UserDefaultsClientProtocol
+        userDefaultsClient: UserDefaultsClientProtocol,
+        notificationCenter: NotificationCenter
     ) -> UIViewController {
         let viewModel = SearchRepositoryViewModel(
             state: .init(repositories: []),
             environment: .init(
                 apiClient: apiClient,
-                userDefaultsClient: userDefaultsClient
+                userDefaultsClient: userDefaultsClient,
+                notificationCenter: notificationCenter
             )
         )
         let view = SearchRepositoryView(viewModel: viewModel)

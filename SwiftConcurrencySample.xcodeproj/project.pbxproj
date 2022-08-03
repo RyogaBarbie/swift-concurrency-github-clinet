@@ -23,6 +23,7 @@
 		AD2F32A6287AE54A0089DC2D /* FillColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F32A5287AE54A0089DC2D /* FillColorView.swift */; };
 		AD2F3EC8287ED0DD0089DC2D /* ENV.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F3EC6287ED0DD0089DC2D /* ENV.swift */; };
 		AD2F3ECB287ED2860089DC2D /* ENVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F3ECA287ED2860089DC2D /* ENVClient.swift */; };
+		AD32DADD2892759700E1D2C3 /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD32DADC2892759700E1D2C3 /* NotificationName.swift */; };
 		AD4CB3B6287978EF0029883B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB3B5287978EF0029883B /* Assets.xcassets */; };
 		AD4CB3B9287978EF0029883B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB3B8287978EF0029883B /* Preview Assets.xcassets */; };
 		AD507742287EE35400009C1D /* StaredRepositoriesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD507741287EE35400009C1D /* StaredRepositoriesRequest.swift */; };
@@ -68,6 +69,7 @@
 		AD2F32A5287AE54A0089DC2D /* FillColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FillColorView.swift; sourceTree = "<group>"; };
 		AD2F3EC6287ED0DD0089DC2D /* ENV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENV.swift; sourceTree = "<group>"; };
 		AD2F3ECA287ED2860089DC2D /* ENVClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ENVClient.swift; sourceTree = "<group>"; };
+		AD32DADC2892759700E1D2C3 /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		AD4CB3AE287978EE0029883B /* SwiftConcurrencySample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftConcurrencySample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD4CB3B5287978EF0029883B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AD4CB3B8287978EF0029883B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 		AD2F32A7287DBBEA0089DC2D /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				AD32DADB2892758300E1D2C3 /* Notification */,
 				ADA52A5328978D2F0081876D /* Prelude */,
 				AD2F32A8287DBC080089DC2D /* Env */,
 				AD695E4128797EFD00D1C9B5 /* API */,
@@ -206,6 +209,14 @@
 				AD2F3ECA287ED2860089DC2D /* ENVClient.swift */,
 			);
 			path = Env;
+			sourceTree = "<group>";
+		};
+		AD32DADB2892758300E1D2C3 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				AD32DADC2892759700E1D2C3 /* NotificationName.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 		AD4CB3A5287978EE0029883B = {
@@ -489,6 +500,7 @@
 				AD695E46287984F500D1C9B5 /* APIClient.swift in Sources */,
 				AD695E492879AC7700D1C9B5 /* SearchRepositoryRequest.swift in Sources */,
 				AD50774E287FA46000009C1D /* StaredRepositoryHostingController.swift in Sources */,
+				AD32DADD2892759700E1D2C3 /* NotificationName.swift in Sources */,
 				AD2F329F287ACB480089DC2D /* UserTranslator.swift in Sources */,
 				AD507747287EF01E00009C1D /* BaseTabBarController.swift in Sources */,
 				AD695E5D2879ADD500D1C9B5 /* User.swift in Sources */,
