@@ -48,6 +48,7 @@
 		AD695E592879AD8100D1C9B5 /* GithubLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E582879AD8100D1C9B5 /* GithubLicense.swift */; };
 		AD695E5D2879ADD500D1C9B5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E5C2879ADD500D1C9B5 /* User.swift */; };
 		AD695E5F2879ADEC00D1C9B5 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD695E5E2879ADEC00D1C9B5 /* Repository.swift */; };
+		ADA52A5528978D3B0081876D /* TaskBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA52A5428978D3B0081876D /* TaskBag.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,7 @@
 		AD695E582879AD8100D1C9B5 /* GithubLicense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubLicense.swift; sourceTree = "<group>"; };
 		AD695E5C2879ADD500D1C9B5 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		AD695E5E2879ADEC00D1C9B5 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		ADA52A5428978D3B0081876D /* TaskBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskBag.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,7 +193,11 @@
 		AD2F32A7287DBBEA0089DC2D /* Core */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				AD32DADB2892758300E1D2C3 /* Notification */,
+=======
+				ADA52A5328978D2F0081876D /* Prelude */,
+>>>>>>> origin/master
 				AD2F32A8287DBC080089DC2D /* Env */,
 				AD695E4128797EFD00D1C9B5 /* API */,
 				AD2F2F5D287AB0410089DC2D /* UserDefaults */,
@@ -396,6 +402,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		ADA52A5328978D2F0081876D /* Prelude */ = {
+			isa = PBXGroup;
+			children = (
+				ADA52A5428978D3B0081876D /* TaskBag.swift */,
+			);
+			path = Prelude;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -472,6 +486,7 @@
 				AD695E592879AD8100D1C9B5 /* GithubLicense.swift in Sources */,
 				AD695E5F2879ADEC00D1C9B5 /* Repository.swift in Sources */,
 				AD507752287FA59B00009C1D /* StaredRepositoryViewModel.swift in Sources */,
+				ADA52A5528978D3B0081876D /* TaskBag.swift in Sources */,
 				AD2F2F61287AB19D0089DC2D /* UserDefaultsClientKey.swift in Sources */,
 				AD2F3EC8287ED0DD0089DC2D /* ENV.swift in Sources */,
 				AD507742287EE35400009C1D /* StaredRepositoriesRequest.swift in Sources */,
