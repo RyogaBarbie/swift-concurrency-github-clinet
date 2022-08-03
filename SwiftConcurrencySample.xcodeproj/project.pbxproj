@@ -193,11 +193,8 @@
 		AD2F32A7287DBBEA0089DC2D /* Core */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
 				AD32DADB2892758300E1D2C3 /* Notification */,
-=======
 				ADA52A5328978D2F0081876D /* Prelude */,
->>>>>>> origin/master
 				AD2F32A8287DBC080089DC2D /* Env */,
 				AD695E4128797EFD00D1C9B5 /* API */,
 				AD2F2F5D287AB0410089DC2D /* UserDefaults */,
