@@ -10,7 +10,8 @@ import Foundation
 enum StaredRepositoryBuilder {
     @MainActor static func build(
         apiClient: APIClientProtocol,
-        userDefaultsClient: UserDefaultsClientProtocol
+        userDefaultsClient: UserDefaultsClientProtocol,
+        notificationCenter: NotificationCenter
     ) -> StaredRepositoryHostingController {
         let viewModel = StaredRepositoryViewModel(
             state: .init(repositories: []),
@@ -21,7 +22,8 @@ enum StaredRepositoryBuilder {
         )
         return StaredRepositoryHostingController(
             StaredRepositoryView(
-                viewModel: viewModel
+                viewModel: viewModel,
+                notificationCenter: notificationCenter
             ),
             viewModel: viewModel
         )
