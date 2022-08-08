@@ -69,58 +69,77 @@ final class SearchRepositoryViewModel: ObservableObject {
 
             let request = SearchRepositoryRequest(
                 keyword: "swift",
-                page: state.page,
+                page: self.state.page,
                 sort: "updated"
             )
-            Task {
-                do {
-                    let response = try await environment.apiClient.send(request)
 
-                    state.resultsCount = response.totalCount
-                    state.repositories = response.items.map {
-                        RepositoryTranslator.translateToRepository(from: $0)
+            Task.detached { [weak self] in
+                guard let self = self else { return }
+
+                do {
+                    let response = try await self.environment.apiClient.send(request)
+
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.resultsCount = response.totalCount
+                        self.state.repositories = response.items.map {
+                            RepositoryTranslator.translateToRepository(from: $0)
+                        }
+                        self.state.isLoading = false
                     }
                 } catch {
                     print(error)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.isLoading = false
+                    }
                 }
-                state.isLoading = false
             }
 
         case let .didTapStar(index, repository):
             if let isStared = repository.isStared, isStared {
-                let request = UnStarRequest(
-                    ownerName: repository.owner.login,
-                    repositoryName: repository.name
-                )
-                Task {
+                Task.detached { [repository, weak self] in
+                    guard let self = self else { return }
+                    let request = UnStarRequest(
+                        ownerName: repository.owner.login,
+                        repositoryName: repository.name
+                    )
                     do {
-                        _ = try await environment.apiClient.send(request)
-                        state.repositories[index].isStared = false
-                        state.repositories[index].stargazersCount -= 1
-
-                        environment.notificationCenter.post(
-                            name: Notification.Name.updateUserStares,
-                            object: state.repositories[index]
-                        )
+                        _ = try await self.environment.apiClient.send(request)
+                        Task { @MainActor [index, weak self] in
+                            guard let self = self else { return }
+                            self.state.repositories[index].isStared = false
+                            self.state.repositories[index].stargazersCount -= 1
+                            
+                            self.environment.notificationCenter.post(
+                                name: Notification.Name.updateUserStares,
+                                object: self.state.repositories[index]
+                            )
+                        }
                     } catch {
                         print(error)
                     }
                 }
             } else {
-                let request = StarRepositoryRequest(
-                    ownerName: repository.owner.login,
-                    repositoryName: repository.name
-                )
-                Task {
-                    do {
-                        _ = try await environment.apiClient.send(request)
-                        state.repositories[index].isStared = true
-                        state.repositories[index].stargazersCount += 1
+                Task.detached {[repository, weak self] in
+                    guard let self = self else { return }
 
-                        environment.notificationCenter.post(
-                            name: Notification.Name.updateUserStares,
-                            object: state.repositories[index]
-                        )
+                    let request = StarRepositoryRequest(
+                        ownerName: repository.owner.login,
+                        repositoryName: repository.name
+                    )
+                    do {
+                        _ = try await self.environment.apiClient.send(request)
+                        Task { @MainActor [index, weak self] in
+                            guard let self = self else { return }
+                            self.state.repositories[index].isStared = true
+                            self.state.repositories[index].stargazersCount += 1
+
+                            self.environment.notificationCenter.post(
+                                name: Notification.Name.updateUserStares,
+                                object: self.state.repositories[index]
+                            )
+                        }
                     } catch {
                         print(error)
                     }
@@ -134,34 +153,48 @@ final class SearchRepositoryViewModel: ObservableObject {
             environment.userDefaultsClient.searchKeywordHistories.append(keyword)
             
             let request = SearchRepositoryRequest(
-                keyword: state.keyword,
-                page: state.page
+                keyword: self.state.keyword,
+                page: self.state.page
             )
-            Task {
-                do {
-                    let response = try await environment.apiClient.send(request)
 
-                    state.resultsCount = response.totalCount
-                    state.repositories = response.items.map {
-                        RepositoryTranslator.translateToRepository(from: $0)
+            Task.detached {[weak self] in
+                guard let self = self else { return }
+
+                do {
+                    let response = try await self.environment.apiClient.send(request)
+
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.resultsCount = response.totalCount
+                        self.state.repositories = response.items.map {
+                            RepositoryTranslator.translateToRepository(from: $0)
+                        }
+                        self.state.isLoading = false
                     }
                 } catch {
                     print(error)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.isLoading = false
+                    }
                 }
-                state.isLoading = false
             }
 
         case let .checkStar(index, repository):
             guard repository.isStared == nil else { break }
 
-            let request = CheckStarRequest(
-                ownerName: repository.owner.login,
-                repositoryName: repository.name
-            )
-            Task {
+            Task.detached {[weak self, repository] in
+                guard let self = self else { return }
+                let request = CheckStarRequest(
+                    ownerName: repository.owner.login,
+                    repositoryName: repository.name
+                )
                 do {
-                    let response = try await environment.apiClient.send(request)
-                    state.repositories[index].isStared = response
+                    let response = try await self.environment.apiClient.send(request)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.repositories[index].isStared = response
+                    }
                 } catch {
                     print(error)
                 }
@@ -171,22 +204,31 @@ final class SearchRepositoryViewModel: ObservableObject {
             if state.isLoading { return } else { state.isLoading = true }
             state.page += 1
 
-            Task {
-                do {
-                    let request = SearchRepositoryRequest(
-                        keyword: state.keyword,
-                        page: state.page
-                    )
-                    let response = try await environment.apiClient.send(request)
+            let request = SearchRepositoryRequest(
+                keyword: self.state.keyword,
+                page: self.state.page
+            )
+            Task.detached { [weak self] in
+                guard let self = self else { return }
 
-                    state.resultsCount = response.totalCount
-                    state.repositories.append(contentsOf: response.items.map {
-                        RepositoryTranslator.translateToRepository(from: $0)
-                    })
+                do {
+                    let response = try await self.environment.apiClient.send(request)
+
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.resultsCount = response.totalCount
+                        self.state.repositories.append(contentsOf: response.items.map {
+                            RepositoryTranslator.translateToRepository(from: $0)
+                        })
+                        self.state.isLoading = false
+                    }
                 } catch {
                     print(error)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.isLoading = true
+                    }
                 }
-                state.isLoading = false
             }
         }
     }
