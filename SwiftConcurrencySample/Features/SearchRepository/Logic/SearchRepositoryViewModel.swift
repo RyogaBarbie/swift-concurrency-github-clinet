@@ -105,23 +105,17 @@ final class SearchRepositoryViewModel: ObservableObject {
                         repositoryName: repository.name
                     )
                     do {
-<<<<<<< HEAD
                         _ = try await self.environment.apiClient.send(request)
                         Task { @MainActor [index, weak self] in
                             guard let self = self else { return }
                             self.state.repositories[index].isStared = false
                             self.state.repositories[index].stargazersCount -= 1
+                            
+                            self.environment.notificationCenter.post(
+                                name: Notification.Name.updateUserStares,
+                                object: self.state.repositories[index]
+                            )
                         }
-=======
-                        _ = try await environment.apiClient.send(request)
-                        state.repositories[index].isStared = false
-                        state.repositories[index].stargazersCount -= 1
-
-                        environment.notificationCenter.post(
-                            name: Notification.Name.updateUserStares,
-                            object: state.repositories[index]
-                        )
->>>>>>> origin/master
                     } catch {
                         print(error)
                     }
@@ -135,23 +129,17 @@ final class SearchRepositoryViewModel: ObservableObject {
                         repositoryName: repository.name
                     )
                     do {
-<<<<<<< HEAD
                         _ = try await self.environment.apiClient.send(request)
                         Task { @MainActor [index, weak self] in
                             guard let self = self else { return }
                             self.state.repositories[index].isStared = true
                             self.state.repositories[index].stargazersCount += 1
-                        }
-=======
-                        _ = try await environment.apiClient.send(request)
-                        state.repositories[index].isStared = true
-                        state.repositories[index].stargazersCount += 1
 
-                        environment.notificationCenter.post(
-                            name: Notification.Name.updateUserStares,
-                            object: state.repositories[index]
-                        )
->>>>>>> origin/master
+                            self.environment.notificationCenter.post(
+                                name: Notification.Name.updateUserStares,
+                                object: self.state.repositories[index]
+                            )
+                        }
                     } catch {
                         print(error)
                     }

@@ -182,8 +182,7 @@ final class StaredRepositoryViewModel: ObservableObject {
                     }
                 }
             }
-<<<<<<< HEAD
-=======
+
         case .updateUserStares:
             state.page = 1
             state.repositories = []
@@ -192,22 +191,29 @@ final class StaredRepositoryViewModel: ObservableObject {
             let request = StaredRepositoriesRequest(
                 page: state.page
             )
-            Task {
+            
+            Task.detached { [weak self] in
+                guard let self = self else { return }
                 do {
-                    let response = try await environment.apiClient.send(request)
-                    state.repositories.append(contentsOf: response.map {
-                        RepositoryTranslator.translateToRepository(from: $0)
-                    })
+                    let response = try await self.environment.apiClient.send(request)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.state.repositories.append(contentsOf: response.map {
+                            RepositoryTranslator.translateToRepository(from: $0)
+                        })
+
+                        self.state.isLoading = false
+                    }
                 } catch {
                     print(error)
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        self.state.isLoading = false
+                    }
                 }
-
-                state.isLoading = false
             }
-        }
->>>>>>> origin/master
 
         }
     }
-
 }
