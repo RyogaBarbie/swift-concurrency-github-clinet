@@ -11,6 +11,7 @@ import SwiftUI
 struct StaredRepositoryView: View {
     @ObservedObject private var viewModel: StaredRepositoryViewModel
     private let notificationCenter: NotificationCenter
+    private let taskBag = TaskBag()
     
     init(
         viewModel: StaredRepositoryViewModel,
@@ -18,15 +19,15 @@ struct StaredRepositoryView: View {
     ) {
         self.viewModel = viewModel
         self.notificationCenter = notificationCenter
-        
-        // TODO: manage task lifecycle with TaskBag
-        Task.detached {
+
+        let task = Task.detached {
             for await notification in notificationCenter.notifications(named: Notification.Name.updateUserStares, object: nil) {
                 guard let repository = notification.object as? Repository else { return }
                 dump(repository)
                 _ = await viewModel.send(.updateUserStares)
             }
         }
+        taskBag.append(task)
     }
     
     var body: some View {
