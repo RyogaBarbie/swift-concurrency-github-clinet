@@ -20,11 +20,11 @@ struct StaredRepositoryView: View {
         self.viewModel = viewModel
         self.notificationCenter = notificationCenter
 
-        let task = Task.detached {
+        let task = Task { @MainActor in
             for await notification in notificationCenter.notifications(named: Notification.Name.updateUserStares, object: nil) {
                 guard let repository = notification.object as? Repository else { return }
-                dump(repository)
-                _ = await viewModel.send(.updateUserStares)
+//                dump(repository)
+                viewModel.send(.updateUserStares)
             }
         }
         taskBag.append(task)

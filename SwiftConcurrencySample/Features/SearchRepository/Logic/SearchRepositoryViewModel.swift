@@ -56,6 +56,7 @@ final class SearchRepositoryViewModel: ObservableObject {
         case search(String)
         case checkStar(Int, Repository)
         case pagination
+        case _update(repositories: [Repository], pageNumber: Int?, resultsCount: Int?)
     }
     
     enum RouteType: Sendable {
@@ -81,11 +82,16 @@ final class SearchRepositoryViewModel: ObservableObject {
 
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
-                        self.state.resultsCount = response.totalCount
-                        self.state.repositories = response.items.map {
-                            RepositoryTranslator.translateToRepository(from: $0)
-                        }
-                        self.state.isLoading = false
+                        
+                        self.send(
+                            ._update(
+                                repositories: response.items.map {
+                                    RepositoryTranslator.translateToRepository(from: $0)
+                                },
+                                pageNumber: nil,
+                                resultsCount: response.totalCount
+                            )
+                        )
                     }
                 } catch {
                     print(error)
@@ -98,7 +104,7 @@ final class SearchRepositoryViewModel: ObservableObject {
 
         case let .didTapStar(index, repository):
             if let isStared = repository.isStared, isStared {
-                Task.detached { [repository, weak self] in
+                Task.detached { [weak self, repository] in
                     guard let self = self else { return }
                     let request = UnStarRequest(
                         ownerName: repository.owner.login,
@@ -106,14 +112,25 @@ final class SearchRepositoryViewModel: ObservableObject {
                     )
                     do {
                         _ = try await self.environment.apiClient.send(request)
-                        Task { @MainActor [index, weak self] in
+
+                        Task { @MainActor [weak self, index] in
                             guard let self = self else { return }
-                            self.state.repositories[index].isStared = false
-                            self.state.repositories[index].stargazersCount -= 1
-                            
+
                             self.environment.notificationCenter.post(
                                 name: Notification.Name.updateUserStares,
                                 object: self.state.repositories[index]
+                            )
+
+                            var _repositories = self.state.repositories
+                            _repositories[index].isStared = false
+                            _repositories[index].stargazersCount -= 1
+
+                            self.send(
+                                ._update(
+                                    repositories: _repositories,
+                                    pageNumber: nil,
+                                    resultsCount: nil
+                                )
                             )
                         }
                     } catch {
@@ -121,7 +138,7 @@ final class SearchRepositoryViewModel: ObservableObject {
                     }
                 }
             } else {
-                Task.detached {[repository, weak self] in
+                Task.detached {[weak self, repository] in
                     guard let self = self else { return }
 
                     let request = StarRepositoryRequest(
@@ -130,14 +147,24 @@ final class SearchRepositoryViewModel: ObservableObject {
                     )
                     do {
                         _ = try await self.environment.apiClient.send(request)
-                        Task { @MainActor [index, weak self] in
+                        Task { @MainActor [weak self, index] in
                             guard let self = self else { return }
-                            self.state.repositories[index].isStared = true
-                            self.state.repositories[index].stargazersCount += 1
 
                             self.environment.notificationCenter.post(
                                 name: Notification.Name.updateUserStares,
                                 object: self.state.repositories[index]
+                            )
+
+                            var _repositories = self.state.repositories
+                            _repositories[index].isStared = true
+                            _repositories[index].stargazersCount += 1
+
+                            self.send(
+                                ._update(
+                                    repositories: _repositories,
+                                    pageNumber: nil,
+                                    resultsCount: nil
+                                )
                             )
                         }
                     } catch {
@@ -153,8 +180,8 @@ final class SearchRepositoryViewModel: ObservableObject {
             environment.userDefaultsClient.searchKeywordHistories.append(keyword)
             
             let request = SearchRepositoryRequest(
-                keyword: self.state.keyword,
-                page: self.state.page
+                keyword: state.keyword,
+                page: state.page
             )
 
             Task.detached {[weak self] in
@@ -163,13 +190,17 @@ final class SearchRepositoryViewModel: ObservableObject {
                 do {
                     let response = try await self.environment.apiClient.send(request)
 
-                    Task { @MainActor [weak self] in
+                    Task { @MainActor [weak self, response] in
                         guard let self = self else { return }
-                        self.state.resultsCount = response.totalCount
-                        self.state.repositories = response.items.map {
-                            RepositoryTranslator.translateToRepository(from: $0)
-                        }
-                        self.state.isLoading = false
+                        self.send(
+                            ._update(
+                                repositories: response.items.map {
+                                    RepositoryTranslator.translateToRepository(from: $0)
+                                },
+                                pageNumber: nil,
+                                resultsCount: response.totalCount
+                            )
+                        )
                     }
                 } catch {
                     print(error)
@@ -193,7 +224,17 @@ final class SearchRepositoryViewModel: ObservableObject {
                     let response = try await self.environment.apiClient.send(request)
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
-                        self.state.repositories[index].isStared = response
+                        
+                        var _repositories = self.state.repositories
+                        
+                        _repositories[index].isStared = response
+                        self.send(
+                            ._update(
+                                repositories: _repositories,
+                                pageNumber: nil,
+                                resultsCount: nil
+                            )
+                        )
                     }
                 } catch {
                     print(error)
@@ -216,11 +257,18 @@ final class SearchRepositoryViewModel: ObservableObject {
 
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
-                        self.state.resultsCount = response.totalCount
-                        self.state.repositories.append(contentsOf: response.items.map {
+                        
+                        let _repositories = self.state.repositories + response.items.map {
                             RepositoryTranslator.translateToRepository(from: $0)
-                        })
-                        self.state.isLoading = false
+                        }
+                        
+                        self.send(
+                            ._update(
+                                repositories: _repositories,
+                                pageNumber: nil,
+                                resultsCount: response.totalCount
+                            )
+                        )
                     }
                 } catch {
                     print(error)
@@ -230,8 +278,14 @@ final class SearchRepositoryViewModel: ObservableObject {
                     }
                 }
             }
+
+        case let ._update(repositories, pageNumber, resultsCount):
+            if let _pageNumber = pageNumber { state.page = _pageNumber }
+            if let _resultsCount = resultsCount { state.resultsCount = _resultsCount}
+            state.repositories = repositories
+            state.isLoading = false
+
         }
     }
-
 
 }

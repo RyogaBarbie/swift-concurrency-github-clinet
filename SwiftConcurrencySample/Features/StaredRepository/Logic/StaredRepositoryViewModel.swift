@@ -24,6 +24,8 @@ final class StaredRepositoryViewModel: ObservableObject {
         var page: Int = 1
         var repositories: [Repository]
         var isLoading: Bool = false
+        var updateUserStaresTask: Task<(), Error>? = nil
+        var apiTask: Task<(), Error>? = nil
 
         init(
             repositories: [Repository] = []
@@ -51,6 +53,7 @@ final class StaredRepositoryViewModel: ObservableObject {
         case checkStar(Int, Repository)
         case pagination
         case updateUserStares
+        case _update(repositories: [Repository], pageNumber: Int?)
     }
     
     enum RouteType: Sendable {
@@ -63,7 +66,7 @@ final class StaredRepositoryViewModel: ObservableObject {
             state.isLoading = true
             
             let request = StaredRepositoriesRequest(
-                page: self.state.page
+                page: state.page
             )
 
             Task.detached {[weak self] in
@@ -71,12 +74,17 @@ final class StaredRepositoryViewModel: ObservableObject {
 
                 do {
                     let response = try await self.environment.apiClient.send(request)
+
                     Task { @MainActor [weak self]  in
                         guard let self = self else { return }
-                        self.state.repositories.append(contentsOf: response.map {
+                        
+                        let _repositories = self.state.repositories + response.map {
                             RepositoryTranslator.translateToRepository(from: $0)
-                        })
-                        self.state.isLoading = false
+                        }
+                        
+                        self.send(
+                            ._update(repositories: _repositories, pageNumber: nil)
+                        )
                     }
                 } catch {
                     print(error)
@@ -88,19 +96,27 @@ final class StaredRepositoryViewModel: ObservableObject {
 
         case let .didTapStar(index, repository):
             if let isStared = repository.isStared, isStared {
-                Task.detached { [repository, weak self] in
+
+                Task.detached { [weak self, repository] in
                     guard let self = self else { return }
+
                     let request = UnStarRequest(
                         ownerName: repository.owner.login,
                         repositoryName: repository.name
                     )
+
                     do {
                         _ = try await self.environment.apiClient.send(request)
                         Task { @MainActor [index, weak self] in
                             guard let self = self else { return }
 
-                            self.state.repositories[index].isStared = false
-                            self.state.repositories[index].stargazersCount -= 1
+                            var _repositories = self.state.repositories
+                            _repositories[index].isStared = false
+                            _repositories[index].stargazersCount -= 1
+                            
+                            self.send(
+                                ._update(repositories: _repositories, pageNumber: nil)
+                            )
                         }
                     } catch {
                         print(error)
@@ -108,7 +124,7 @@ final class StaredRepositoryViewModel: ObservableObject {
                 }
 
             } else {
-                Task.detached { [repository, weak self] in
+                Task.detached { [weak self, repository] in
                     guard let self = self else { return }
 
                     let request = StarRepositoryRequest(
@@ -121,8 +137,13 @@ final class StaredRepositoryViewModel: ObservableObject {
                         Task { @MainActor [index, weak self] in
                             guard let self = self else { return }
 
-                            self.state.repositories[index].isStared = true
-                            self.state.repositories[index].stargazersCount += 1
+                            var _repositories = self.state.repositories
+                            _repositories[index].isStared = true
+                            _repositories[index].stargazersCount += 1
+                            
+                            self.send(
+                                ._update(repositories: _repositories, pageNumber: nil)
+                            )
                         }
                     } catch {
                         print(error)
@@ -134,7 +155,7 @@ final class StaredRepositoryViewModel: ObservableObject {
         case let .checkStar(index, repository):
             guard repository.isStared == nil else { break }
 
-            Task.detached { [repository, weak self] in
+            Task.detached { [weak self, repository] in
                 guard let self = self else { return }
 
                 let request = CheckStarRequest(
@@ -145,7 +166,12 @@ final class StaredRepositoryViewModel: ObservableObject {
                     let response = try await self.environment.apiClient.send(request)
                     Task { @MainActor [index, weak self] in
                         guard let self = self else { return }
-                        self.state.repositories[index].isStared = response
+                        var _repositories = self.state.repositories
+                        _repositories[index].isStared = response
+                        
+                        self.send(
+                            ._update(repositories: _repositories, pageNumber: nil)
+                        )
                     }
                 } catch {
                     print(error)
@@ -158,21 +184,27 @@ final class StaredRepositoryViewModel: ObservableObject {
             state.page += 1
 
             let request = StaredRepositoriesRequest(
-                page: self.state.page
+                page: state.page
             )
 
             Task.detached { [weak self] in
                 guard let self = self else { return }
-
                 do {
                     let response = try await self.environment.apiClient.send(request)
+
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
-
-                        self.state.repositories.append(contentsOf: response.map {
+                        
+                        let _repositories = self.state.repositories + response.map {
                             RepositoryTranslator.translateToRepository(from: $0)
-                        })
-                        self.state.isLoading = false
+                        }
+                        
+                        self.send(
+                            ._update(
+                                repositories: _repositories,
+                                pageNumber: nil
+                            )
+                        )
                     }
                 } catch {
                     print(error)
@@ -184,36 +216,46 @@ final class StaredRepositoryViewModel: ObservableObject {
             }
 
         case .updateUserStares:
-            state.page = 1
-            state.repositories = []
-            state.isLoading = true
-            
-            let request = StaredRepositoriesRequest(
-                page: state.page
-            )
-            
-            Task.detached { [weak self] in
-                guard let self = self else { return }
-                do {
-                    let response = try await self.environment.apiClient.send(request)
-                    Task { @MainActor [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.state.repositories.append(contentsOf: response.map {
-                            RepositoryTranslator.translateToRepository(from: $0)
-                        })
+            state.updateUserStaresTask?.cancel()
 
-                        self.state.isLoading = false
-                    }
-                } catch {
-                    print(error)
-                    Task { @MainActor [weak self] in
-                        guard let self = self else { return }
-                        self.state.isLoading = false
+            state.updateUserStaresTask = Task {
+                state.isLoading = true
+
+                let request = StaredRepositoriesRequest(
+                    page: state.page
+                )
+                
+                if let task = state.updateUserStaresTask, task.isCancelled {
+                    state.isLoading = false
+                    return
+                }
+
+                Task.detached { [environment] in
+                    do {
+                        let response = try await environment.apiClient.send(request)
+
+                        Task { @MainActor [weak self] in
+                            self?.send(
+                                ._update(
+                                    repositories: response.map { RepositoryTranslator.translateToRepository(from: $0) },
+                                    pageNumber: 1
+                                )
+                            )
+                        }
+                    } catch {
+                        print(error)
+                        Task { @MainActor [weak self] in
+                            guard let self = self else { return }
+                            self.state.isLoading = false
+                        }
                     }
                 }
             }
 
+        case let ._update(repositories, pageNumber):
+            if let _pageNumber = pageNumber { state.page = _pageNumber }
+            state.repositories = repositories
+            state.isLoading = false
         }
     }
 }
