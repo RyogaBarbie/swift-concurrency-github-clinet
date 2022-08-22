@@ -28,7 +28,7 @@ class StaredRepositoryHostingController: UIHostingController<StaredRepositoryVie
         super.viewDidLoad()
         
         setup()
-        viewModel.send(.viewDidLoad)
+        viewModel.send(.fetchInitialUserStares(isRefresh: false))
     }
     
     func setup() {

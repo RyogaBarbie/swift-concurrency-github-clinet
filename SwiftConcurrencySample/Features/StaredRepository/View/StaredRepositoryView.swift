@@ -60,6 +60,9 @@ struct StaredRepositoryView: View {
                 }
                 .padding(.top, 15)
             }
+            .refreshable {
+                viewModel.send(.fetchInitialUserStares(isRefresh: true))
+            }
         }
     }
 }

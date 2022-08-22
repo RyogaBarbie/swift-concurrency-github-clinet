@@ -48,7 +48,7 @@ final class StaredRepositoryViewModel: ObservableObject {
     }
     
     enum Action: Sendable {
-        case viewDidLoad
+        case fetchInitialUserStares(isRefresh: Bool)
         case didTapStar(Int, Repository)
         case checkStar(Int, Repository)
         case pagination
@@ -62,11 +62,18 @@ final class StaredRepositoryViewModel: ObservableObject {
     
     func send(_ action: Action) {
         switch action {
-        case .viewDidLoad:
-            state.isLoading = true
+        case let .fetchInitialUserStares(isRefresh):
+            /// pull to refresh時にonAppearが呼ばれずstarの状態取得が走らないので、
+            /// pull to refreshの時はloading stateを変えない&
+            /// 差分更新ではなく新規データソースとなるように repositoriesを空に
+            if isRefresh {
+                state.repositories = []
+            } else {
+                state.isLoading = true
+            }
             
             let request = StaredRepositoriesRequest(
-                page: state.page
+                page: 1
             )
 
             Task.detached {[weak self] in
@@ -77,13 +84,14 @@ final class StaredRepositoryViewModel: ObservableObject {
 
                     Task { @MainActor [weak self]  in
                         guard let self = self else { return }
-                        
-                        let _repositories = self.state.repositories + response.map {
-                            RepositoryTranslator.translateToRepository(from: $0)
-                        }
-                        
+
                         self.send(
-                            ._update(repositories: _repositories, pageNumber: nil)
+                            ._update(
+                                repositories: response.map {
+                                    RepositoryTranslator.translateToRepository(from: $0)
+                                },
+                                pageNumber: 1
+                            )
                         )
                     }
                 } catch {
@@ -222,7 +230,7 @@ final class StaredRepositoryViewModel: ObservableObject {
                 state.isLoading = true
 
                 let request = StaredRepositoriesRequest(
-                    page: state.page
+                    page: 1
                 )
                 
                 if let task = state.updateUserStaresTask, task.isCancelled {
@@ -237,7 +245,8 @@ final class StaredRepositoryViewModel: ObservableObject {
                         Task { @MainActor [weak self] in
                             self?.send(
                                 ._update(
-                                    repositories: response.map { RepositoryTranslator.translateToRepository(from: $0) },
+                                    repositories: response.map { RepositoryTranslator.translateToRepository(from: $0)
+                                    },
                                     pageNumber: 1
                                 )
                             )
