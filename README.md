@@ -1,6 +1,4 @@
-ログインしてなかったら、emailとパスワードの入力画面
-navigatoinbarに検索窓でリポジトリ検索で結果を一覧に表示
-結果をタップで、リポジトリの詳細の表示
-
-option
-検索結果のpagenation実装
+TCAなどを導入せずにベタなSwiftConcurrencyとSwiftUIを使用したgithub client
+apiclinetやViewModel(Logic)部分へのSwiftConcurrencyの導入
+Viewなどのライフサイクルで破棄されるように、Taskのライフサイクルを管理するTaskBagの実装
+画面遷移やTab、Navigation周りはUIKitに寄せている
