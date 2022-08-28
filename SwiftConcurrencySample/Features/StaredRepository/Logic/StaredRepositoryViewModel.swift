@@ -231,7 +231,7 @@ final class StaredRepositoryViewModel: ObservableObject {
                 UpdateUserStaresEffectID(),
                 task: Task {
                     
-                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    // try? await Task.sleep(nanoseconds: 3_000_000_000)
                     state.isLoading = true
 
                     let request = StaredRepositoriesRequest(
