@@ -11,11 +11,16 @@ public typealias EffectId = AnyHashable
 
 public protocol EffectIDProtocol: Hashable, Sendable {}
 
-struct DefaultEffectID: EffectIDProtocol {}
+public struct DefaultEffectID: EffectIDProtocol {}
 
 public class EffectManager {
     public typealias CancelableTask = Task<Void, Never>
+    #if TEST
     private var effects: [EffectId: Array<CancelableTask>] = [:]
+    #else
+    private(set) var effects: [EffectId: Array<CancelableTask>] = [:]
+    #endif
+    
 
     public init(){}
 
@@ -63,9 +68,15 @@ public class EffectManager {
         _ id: T
     ) -> Bool {
         if let tasks = effects[id] {
-            let secondFromLastIndex = tasks.endIndex - 2
-            if let task = tasks[safe: secondFromLastIndex] {
+            if tasks.count == 1, let task = tasks.first {
+                // add->cancelを呼んだ場合
                 return task.isCancelled
+            } else {
+                // cancelAndAddを呼んだ場合
+                let secondFromLastIndex = tasks.endIndex - 2
+                if let task = tasks[safe: secondFromLastIndex] {
+                    return task.isCancelled
+                }
             }
         }
         return false

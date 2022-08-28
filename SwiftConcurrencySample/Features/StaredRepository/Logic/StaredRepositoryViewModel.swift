@@ -230,6 +230,8 @@ final class StaredRepositoryViewModel: ObservableObject {
             effectManager.cancellAndAdd(
                 UpdateUserStaresEffectID(),
                 task: Task {
+                    
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
                     state.isLoading = true
 
                     let request = StaredRepositoriesRequest(
@@ -237,12 +239,14 @@ final class StaredRepositoryViewModel: ObservableObject {
                     )
 
                     if effectManager.isCancelled(UpdateUserStaresEffectID()) {
+                        print("キャンセルされたよ")
                         state.isLoading = false
                         return
                     }
 
                     Task.detached { [environment] in
                         do {
+                            print("send api")
                             let response = try await environment.apiClient.send(request)
 
                             Task { @MainActor [weak self] in
