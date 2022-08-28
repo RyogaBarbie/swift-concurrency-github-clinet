@@ -7,10 +7,13 @@
 
 import Foundation
 
+public struct UpdateUserStaresEffectID: EffectIDProtocol {}
+
 @MainActor
 final class StaredRepositoryViewModel: ObservableObject {
     @Published var state: State
     private let environment: Environment
+    private let effectManager = EffectManager()
     
     init(
         state: State,
@@ -224,42 +227,43 @@ final class StaredRepositoryViewModel: ObservableObject {
             }
 
         case .updateUserStares:
-            state.updateUserStaresTask?.cancel()
+            effectManager.cancellAndAdd(
+                UpdateUserStaresEffectID(),
+                task: Task {
+                    state.isLoading = true
 
-            state.updateUserStaresTask = Task {
-                state.isLoading = true
+                    let request = StaredRepositoriesRequest(
+                        page: 1
+                    )
 
-                let request = StaredRepositoriesRequest(
-                    page: 1
-                )
-                
-                if let task = state.updateUserStaresTask, task.isCancelled {
-                    state.isLoading = false
-                    return
-                }
+                    if effectManager.isCancelled(UpdateUserStaresEffectID()) {
+                        state.isLoading = false
+                        return
+                    }
 
-                Task.detached { [environment] in
-                    do {
-                        let response = try await environment.apiClient.send(request)
+                    Task.detached { [environment] in
+                        do {
+                            let response = try await environment.apiClient.send(request)
 
-                        Task { @MainActor [weak self] in
-                            self?.send(
-                                ._update(
-                                    repositories: response.map { RepositoryTranslator.translateToRepository(from: $0)
-                                    },
-                                    pageNumber: 1
+                            Task { @MainActor [weak self] in
+                                self?.send(
+                                    ._update(
+                                        repositories: response.map { RepositoryTranslator.translateToRepository(from: $0)
+                                        },
+                                        pageNumber: 1
+                                    )
                                 )
-                            )
-                        }
-                    } catch {
-                        print(error)
-                        Task { @MainActor [weak self] in
-                            guard let self = self else { return }
-                            self.state.isLoading = false
+                            }
+                        } catch {
+                            print(error)
+                            Task { @MainActor [weak self] in
+                                guard let self = self else { return }
+                                self.state.isLoading = false
+                            }
                         }
                     }
                 }
-            }
+            )
 
         case let ._update(repositories, pageNumber):
             if let _pageNumber = pageNumber { state.page = _pageNumber }
