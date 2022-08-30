@@ -47,16 +47,28 @@ final class EffectManagerTests: XCTestCase {
         
         XCTAssertTrue(task.isCancelled)
     }
-    
-    func testIsCancelled() async throws {
-        let task = Task<Void, Never>.detached {
+        
+    func testAllCancell() async throws {
+        let task1 = Task<Void, Never>.detached {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
         }
-        
-        effectManager.add(DefaultEffectID(), task: task)
-        effectManager.cancell(DefaultEffectID())
+        effectManager.add(DefaultEffectID(), task: task1)
 
-        XCTAssertTrue(effectManager.isCancelled(DefaultEffectID()))
+        let task2 = Task<Void, Never>.detached {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+        }
+        effectManager.add(DefaultEffectID(), task: task2)
+
+
+        let task3 = Task<Void, Never>.detached {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+        }
+        effectManager.add(DefaultEffectID(), task: task3)
+
+        effectManager.cancell(DefaultEffectID())
+        XCTAssertTrue(task1.isCancelled)
+        XCTAssertTrue(task2.isCancelled)
+        XCTAssertTrue(task3.isCancelled)
     }
     
     func testCanncellAndAddForCancellCase() async throws {
@@ -65,7 +77,7 @@ final class EffectManagerTests: XCTestCase {
 
         let task1 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -74,7 +86,7 @@ final class EffectManagerTests: XCTestCase {
         
         let task2 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -91,7 +103,7 @@ final class EffectManagerTests: XCTestCase {
 
         let task1 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled == false {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -102,7 +114,7 @@ final class EffectManagerTests: XCTestCase {
         
         let task2 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled == false {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -120,18 +132,18 @@ final class EffectManagerTests: XCTestCase {
 
         let task1 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled == false {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
         }
         effectManager.cancellAndAdd(DefaultEffectID(), task: task1)
         
-//        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
         
         let task2 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled == false {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -142,7 +154,7 @@ final class EffectManagerTests: XCTestCase {
         
         let task3 = Task<Void, Never>.detached {[weak self] in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if self!.effectManager.isCancelled(DefaultEffectID()) == false {
+            if Task.isCancelled == false {
                 self!.exceptValue += 1
             }
             expectation.fulfill()
@@ -151,6 +163,6 @@ final class EffectManagerTests: XCTestCase {
 
         
         wait(for: [expectation], timeout: 10.0)
-        XCTAssertEqual(exceptValue, 1)
+        XCTAssertEqual(exceptValue, 2)
     }
 }

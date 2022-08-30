@@ -16,7 +16,7 @@ public struct DefaultEffectID: EffectIDProtocol {}
 public class EffectManager {
     public typealias CancelableTask = Task<Void, Never>
     #if TEST
-    private var effects: [EffectId: Array<CancelableTask>] = [:]
+    private var effects: [EffectId: Set<Task<Void, Never>>] = [:]
     #else
     private(set) var effects: [EffectId: Array<CancelableTask>] = [:]
     #endif
@@ -25,7 +25,7 @@ public class EffectManager {
     public init(){}
 
     public func add<T: EffectIDProtocol>(
-        _ id: T = DefaultEffectID(),
+        _ id: T,
         task: CancelableTask
     ) {
         effects[id, default: []].append(task)
@@ -38,13 +38,13 @@ public class EffectManager {
     
     private func removeTask<T: EffectIDProtocol>(
         _ id: T,
-        task: CancelableTask
+        task: Task<Void, Never>
     ) {
         effects[id]?.removeAll(where: { _task in task == _task })
     }
     
     public func cancellAndAdd<T: EffectIDProtocol>(
-        _ id: T = DefaultEffectID(),
+        _ id: T,
         task: CancelableTask
     ) {
         cancell(id)
@@ -57,28 +57,10 @@ public class EffectManager {
     public func cancell<T: EffectIDProtocol>(
         _ id: T
     ) {
-        if let tasks = effects[id] {
+        if let tasks = effects.removeValue(forKey: id) {
             for task in tasks {
                 task.cancel()
             }
         }
-    }
-
-    public func isCancelled<T: EffectIDProtocol>(
-        _ id: T
-    ) -> Bool {
-        if let tasks = effects[id] {
-            if tasks.count == 1, let task = tasks.first {
-                // add->cancelを呼んだ場合
-                return task.isCancelled
-            } else {
-                // cancelAndAddを呼んだ場合
-                let secondFromLastIndex = tasks.endIndex - 2
-                if let task = tasks[safe: secondFromLastIndex] {
-                    return task.isCancelled
-                }
-            }
-        }
-        return false
     }
 }

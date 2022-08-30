@@ -230,15 +230,15 @@ final class StaredRepositoryViewModel: ObservableObject {
             effectManager.cancellAndAdd(
                 UpdateUserStaresEffectID(),
                 task: Task {
-                    
-                    // try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
                     state.isLoading = true
 
                     let request = StaredRepositoriesRequest(
                         page: 1
                     )
 
-                    if effectManager.isCancelled(UpdateUserStaresEffectID()) {
+                    
+                    if Task.isCancelled {
                         state.isLoading = false
                         return
                     }
