@@ -7,16 +7,16 @@
 
 import Foundation
 
-protocol CancelableTaskProtocol {
+public protocol CancelableTaskProtocol {
     func cancel()
 }
 
 extension Task: CancelableTaskProtocol {}
 
-final class TaskBag {
+public final class TaskBag {
     private(set) var tasks: [CancelableTaskProtocol] = []
 
-    func append(_ task: CancelableTaskProtocol) {
+    public func append(_ task: CancelableTaskProtocol) {
         tasks.append(task)
     }
 

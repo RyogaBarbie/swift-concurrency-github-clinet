@@ -7,10 +7,13 @@
 
 import Foundation
 
+public struct UpdateUserStaresEffectID: EffectIDProtocol {}
+
 @MainActor
 final class StaredRepositoryViewModel: ObservableObject {
     @Published var state: State
     private let environment: Environment
+    private let effectManager = EffectManager()
     
     init(
         state: State,
@@ -224,23 +227,27 @@ final class StaredRepositoryViewModel: ObservableObject {
             }
 
         case .updateUserStares:
-            state.updateUserStaresTask?.cancel()
-
-            state.updateUserStaresTask = Task {
-                state.isLoading = true
+            effectManager.cancellAndAdd(
+                UpdateUserStaresEffectID()
+            ) { @MainActor [weak self] in
+                guard let self = self else { return }
+                
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                self.state.isLoading = true
 
                 let request = StaredRepositoriesRequest(
                     page: 1
                 )
+
                 
-                if let task = state.updateUserStaresTask, task.isCancelled {
-                    state.isLoading = false
+                if Task.isCancelled {
+                    self.state.isLoading = false
                     return
                 }
 
-                Task.detached { [environment] in
+                Task.detached {
                     do {
-                        let response = try await environment.apiClient.send(request)
+                        let response = try await self.environment.apiClient.send(request)
 
                         Task { @MainActor [weak self] in
                             self?.send(
