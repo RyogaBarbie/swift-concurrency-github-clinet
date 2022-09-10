@@ -228,44 +228,45 @@ final class StaredRepositoryViewModel: ObservableObject {
 
         case .updateUserStares:
             effectManager.cancellAndAdd(
-                UpdateUserStaresEffectID(),
-                task: Task {
-                    try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    state.isLoading = true
+                UpdateUserStaresEffectID()
+            ) { @MainActor [weak self] in
+                guard let self = self else { return }
+                
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                self.state.isLoading = true
 
-                    let request = StaredRepositoriesRequest(
-                        page: 1
-                    )
+                let request = StaredRepositoriesRequest(
+                    page: 1
+                )
 
-                    
-                    if Task.isCancelled {
-                        state.isLoading = false
-                        return
-                    }
+                
+                if Task.isCancelled {
+                    self.state.isLoading = false
+                    return
+                }
 
-                    Task.detached { [environment] in
-                        do {
-                            let response = try await environment.apiClient.send(request)
+                Task.detached {
+                    do {
+                        let response = try await self.environment.apiClient.send(request)
 
-                            Task { @MainActor [weak self] in
-                                self?.send(
-                                    ._update(
-                                        repositories: response.map { RepositoryTranslator.translateToRepository(from: $0)
-                                        },
-                                        pageNumber: 1
-                                    )
+                        Task { @MainActor [weak self] in
+                            self?.send(
+                                ._update(
+                                    repositories: response.map { RepositoryTranslator.translateToRepository(from: $0)
+                                    },
+                                    pageNumber: 1
                                 )
-                            }
-                        } catch {
-                            print(error)
-                            Task { @MainActor [weak self] in
-                                guard let self = self else { return }
-                                self.state.isLoading = false
-                            }
+                            )
+                        }
+                    } catch {
+                        print(error)
+                        Task { @MainActor [weak self] in
+                            guard let self = self else { return }
+                            self.state.isLoading = false
                         }
                     }
                 }
-            )
+            }
 
         case let ._update(repositories, pageNumber):
             if let _pageNumber = pageNumber { state.page = _pageNumber }

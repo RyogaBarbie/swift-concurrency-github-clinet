@@ -14,20 +14,16 @@ public protocol EffectIDProtocol: Hashable, Sendable {}
 public struct DefaultEffectID: EffectIDProtocol {}
 
 public class EffectManager {
-    public typealias CancelableTask = Task<Void, Never>
-    #if TEST
-    private var effects: [EffectId: Set<Task<Void, Never>>] = [:]
-    #else
-    private(set) var effects: [EffectId: Array<CancelableTask>] = [:]
-    #endif
-    
+    private(set) var effects: [EffectId: Array<Task<Void, Never>>] = [:]
 
     public init(){}
 
     public func add<T: EffectIDProtocol>(
         _ id: T,
-        task: CancelableTask
+        _ priority: TaskPriority? = nil,
+        _ operation: @Sendable @escaping () async -> Void
     ) {
+        let task = Task<Void, Never>(priority: priority, operation: operation)
         effects[id, default: []].append(task)
         
         Task<Void, Error>.detached {[weak self] in
@@ -45,12 +41,14 @@ public class EffectManager {
     
     public func cancellAndAdd<T: EffectIDProtocol>(
         _ id: T,
-        task: CancelableTask
+        _ priority: TaskPriority? = nil,
+        _ operation: @Sendable @escaping () async -> Void
     ) {
         cancell(id)
         add(
             id,
-            task: task
+            priority,
+            operation
         )
     }
 
