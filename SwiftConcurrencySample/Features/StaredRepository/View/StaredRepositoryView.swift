@@ -27,7 +27,9 @@ struct StaredRepositoryView: View {
                 viewModel.send(.updateUserStares)
             }
         }
-        taskBag.append(task)
+        Task.detached {[taskBag = self.taskBag] in
+            await taskBag.append(task)
+        }
     }
     
     var body: some View {
