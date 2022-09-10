@@ -13,7 +13,7 @@ public protocol CancelableTaskProtocol {
 
 extension Task: CancelableTaskProtocol {}
 
-public final class TaskBag {
+public final actor TaskBag: Sendable {
     private(set) var tasks: [CancelableTaskProtocol] = []
 
     public func append(_ task: CancelableTaskProtocol) {
